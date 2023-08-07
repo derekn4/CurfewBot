@@ -3,11 +3,12 @@ from discord.ext import commands, tasks
 import asyncio
 from datetime import datetime, timedelta  # Add this import
 import pytz
+from decouple import config
 
 intents = discord.Intents.default()
 intents.voice_states = True
 
-TOKEN = 'MTEzODIyOTcxNDE4ODc3MTM0OA.G5wA5h.P7eVniwUcUOeKOLWkCVH-cMHPuxE5dAtUM97NQ'
+TOKEN = config('BOT_TOKEN')
 GUILD_ID = 848474364562243615  # Replace with your Guild ID
 
 bot = commands.Bot(command_prefix='!', intents=intents)
