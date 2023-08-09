@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands, tasks
+from discord.utils import get
 import asyncio
 from datetime import datetime, timedelta  # Add this import
 import pytz
@@ -71,6 +72,58 @@ async def curfew(ctx, time_str: str, member: discord.Member):
     await asyncio.sleep(time_diff)
     await member.move_to(None)
     
+@bot.command()
+async def allcurfew(ctx, time_str: str):
+    try:
+        curfew_time = datetime.strptime(time_str, '%I:%M%p').time()
+    except ValueError:
+        await ctx.send("Invalid time format. Please use the format '1:00AM'.")
+        return
+    
+    # Define the Pacific Time Zone
+    pacific_timezone = pytz.timezone('US/Pacific')
+    
+    current_time = datetime.now(pacific_timezone).time()  # Get the current time in PST
+    curfew_datetime = pacific_timezone.localize(datetime.combine(datetime.now(pacific_timezone).date(), curfew_time))
+    
+    if current_time > curfew_time:
+        curfew_datetime += timedelta(days=1)
+    
+    time_diff = (curfew_datetime - datetime.now(pacific_timezone)).total_seconds()
+    
+    await ctx.send(f"Curfew set for {curfew_time.strftime('%I:%M %p')} PST for the regulars. I will disconnect them at that time.")
+    
+    # Format the allow_time using the specified format
+    allow_time_str = (curfew_datetime + timedelta(minutes=5)).strftime('%I:%M %p')
+    
+    usernames = ["totallyhweee", "jucotastic", "brbhungry", "darrents", "sapphirearabian", "teberp", "weselton", "henrythekoala"]
+    members = []
+    # Loop through the username strings and convert them to discord.Member objects
+    for username in usernames:
+        member = get(guild.members, display_name=username)
+        if member:
+            members.append(member)
+    
+    # Create a list of dictionaries for each member and their allow time
+    data = [{"User": member.display_name, "Allow": allow_time_str} for member in members]
+    
+    # Create a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+    
+    # Append the DataFrame to the CSV file
+    df.to_csv(csv_filename, mode='a', header=False, index=False)
+            
+            
+    # Update the global kicked_usernames list
+    global kicked_usernames
+    kicked_usernames.extend(member.display_name for member in members)
+    
+    await asyncio.sleep(time_diff)
+    
+    # Loop through the members list and kick them from the voice channel
+    for member in members:
+        await member.move_to(None)
+    
 @bot.event
 async def on_voice_state_update(member, before, after):
     # Load the CSV file into a pandas DataFrame
@@ -81,8 +134,6 @@ async def on_voice_state_update(member, before, after):
     if after.channel and after.channel != before.channel:
         if member.display_name in kicked_usernames:
             with open(csv_filename, "r", newline="") as csvfile:
-                print("Reading CSV file")
-                print()
                 csv_reader = csv.reader(csvfile)
                 header = next(csv_reader)  # Read and store the header row
 
@@ -94,27 +145,20 @@ async def on_voice_state_update(member, before, after):
                     user, allow_time_str = row
                     if allow_time_str != 'Allow':  # Skip the header row
                         allow_time = datetime.strptime(allow_time_str, '%I:%M %p').time()
-                        print("Allow Time:", allow_time)
-                        print("Now Time:", now.time())
-                        print("Row:", row)
-                        print()
                         if member.display_name == user and now.time() < allow_time:
-                            print("Here 1")
                             # Kick user and send "SHAME" message
                             await asyncio.gather(
                                 member.move_to(None),
-                                send_shame_message(member)
+                                #send_shame_message(member)
                             )
                             should_update_csv = False
                         else:
                             print("Here 2")
+                            if member.display_name != user:
+                                updated_rows.append(row) 
                             should_update_csv = True
-                            updated_rows.append(row)
-            if should_update_csv:
-                print("Updating CSV file")
-                print("Row Update:", updated_rows)
-                print("Row:", row)
-                
+                            
+            if should_update_csv:                
                 # Update the DataFrame with updated rows
                 df_updated = pd.DataFrame(updated_rows, columns=df.columns)
                 print("DataFrame:", df_updated)
