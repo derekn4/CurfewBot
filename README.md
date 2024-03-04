@@ -208,3 +208,7 @@ The bot removes a user from any (and every) voice channel at a specified time an
 ### HOW to use?
 Command to set a curfew:
   - !curfew [time][AM/PM] [username]
+
+
+[Python]: https://www.python.org/static/img/python-logo.png
+[Python-url]: https://www.python.org/about/website/
