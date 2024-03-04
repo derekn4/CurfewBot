@@ -134,8 +134,6 @@ Command to set a curfew:
   - !curfew [time][AM/PM] [username]
 
 
-
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -188,9 +186,6 @@ Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
