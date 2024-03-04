@@ -66,7 +66,6 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -149,6 +148,7 @@ Command to set a curfew:
 - [X] Kicks user out of voice call
     - [X] Continues to kick user out of voice channels until curfew is up
     - [X] Mentions and shames user in General chat if they try to join before curfew is over
+- [ ] Push CurfewBot to server to run remotely and not local.
 
 See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
@@ -174,32 +174,18 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - derek.nguyen99@gmail.com@derek.nguyen99@gmail.com_client.com
-
+Derek Nguyen - [@LinkedIn](https://www.linkedin.com/in/derekhuynguyen/) - [@email]derek.nguyen99@gmail.com
 Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/CurfewBot)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
