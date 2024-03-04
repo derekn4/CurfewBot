@@ -77,9 +77,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+This is exactly what it sounds like. It's a Discord bot that forces a curfew on members in your Discord group.
+The bot removes a user from any (and every) voice channel at a specified time and will not allow them to rejoin until their curfew is up.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -88,7 +87,6 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 ### Built With
 
 * [![Python][Python.org]][Python-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -97,31 +95,30 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Since it's all in Python, we are going to need pip.
 
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
-* npm
+* pip
   ```sh
-  npm install npm@latest -g
+  pip install --upgrade pip
   ```
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Get a free API Key at [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)
 2. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/derekn4/CurfewBot.git
    ```
-3. Install NPM packages
+3. Install Python packages
    ```sh
-   npm install
+   pip install -r /path/to/requirements.txt
    ```
-4. Enter your API in `config.js`
+4. Enter your API in `.env`
    ```js
-   const API_KEY = 'ENTER YOUR API';
+   BOT_TOKEN="YOUR BOT TOKEN HERE"
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -147,7 +144,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,9 +180,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - derek.nguyen99@gmail.com@derek.nguyen99@gmail.com_client.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/CurfewBot)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -213,5 +210,3 @@ Command to set a curfew:
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [Python.org]: https://www.python.org/static/img/python-logo.png
 [Python-url]: https://www.python.org/about/website/
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
