@@ -183,6 +183,7 @@ Don't forget to give the project a star! Thanks again!
 Derek Nguyen 
 - [LinkedIn](https://www.linkedin.com/in/derekhuynguyen/) 
 - [Email](derek.nguyen99@gmail.com)
+<br></br>
 Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/CurfewBot)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
