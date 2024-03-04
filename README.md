@@ -87,7 +87,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 ### Built With
 
-* [![Python][python.org]][Python-url]
+* [![Python][Python.org]][Python-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -209,6 +209,9 @@ The bot removes a user from any (and every) voice channel at a specified time an
 Command to set a curfew:
   - !curfew [time][AM/PM] [username]
 
-
-[Python]: https://www.python.org/static/img/python-logo.png
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[Python.org]: https://www.python.org/static/img/python-logo.png
 [Python-url]: https://www.python.org/about/website/
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
