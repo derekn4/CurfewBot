@@ -107,7 +107,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)
+1. To get started with the Discord API [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)
 2. Clone the repo
    ```sh
    git clone https://github.com/derekn4/CurfewBot.git
@@ -128,9 +128,14 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+First, make sure that your Bot is enabled for the Discord server of intended use.
+Second, enable access to voice chat and text chats, as well as admin privileges. 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Command to set a curfew:
+  - !curfew [time][AM/PM] [username]
+
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -139,10 +144,11 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [X] Responds to command
+- [X] Adds user to database with cutoff time
+- [X] Kicks user out of voice call
+    - [X] Continues to kick user out of voice channels until curfew is up
+    - [X] Mentions and shames user in General chat if they try to join before curfew is over
 
 See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
@@ -196,15 +202,6 @@ Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/
 * []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## What is it?
-This is exactly what it sounds like. It's a Discord bot that forces a curfew on members in your Discord group.
-The bot removes a user from any (and every) voice channel at a specified time and will not allow them to rejoin until their curfew is up.
-
-### HOW to use?
-Command to set a curfew:
-  - !curfew [time][AM/PM] [username]
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
