@@ -1,0 +1,7 @@
+discord.py>=2.3.0
+PyNaCl>=1.5.0
+pytz>=2023.3
+python-decouple>=3.8
+pandas
+dnspython==2.3.0
+async-timeout==3.0.1

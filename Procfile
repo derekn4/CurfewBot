@@ -1,1 +1,1 @@
-worker: python curfewbot.py
+worker: python src/curfewbot.py

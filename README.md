@@ -23,7 +23,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/derekn4/CurfewBot?tab=readme-ov-file">
+  <a href="https://github.com/derekn4/CurfewBot">
     <img src="curfew.png" alt="Logo" width="300" height="300">
   </a>
 
