@@ -222,20 +222,29 @@ async def restore_curfews_from_db():
                 logger.info(f"Cleaned up expired curfew for user {user_id}")
                 continue
 
+            member = target_guild.get_member(user_id)
+            if not member:
+                continue
+
+            # If curfew is currently active, kick them if they're in voice
+            if now >= curfew_dt and now < allow_dt:
+                if member.voice and member.voice.channel:
+                    await member.move_to(None)
+                    logger.info(f"Kicked {member.display_name} from voice on startup (active curfew)")
+                continue
+
             # If curfew time hasn't hit yet, schedule the kick
             if now < curfew_dt:
-                member = target_guild.get_member(user_id)
-                if member:
-                    time_diff = (curfew_dt - now).total_seconds()
-                    kick_task = asyncio.create_task(kick_after_delay(member, time_diff))
+                time_diff = (curfew_dt - now).total_seconds()
+                kick_task = asyncio.create_task(kick_after_delay(member, time_diff))
 
-                    reminder_delay = max(0, time_diff - 300)
-                    reminder_task = None
-                    if reminder_delay > 0:
-                        reminder_task = asyncio.create_task(schedule_reminder(member, reminder_delay))
+                reminder_delay = max(0, time_diff - 300)
+                reminder_task = None
+                if reminder_delay > 0:
+                    reminder_task = asyncio.create_task(schedule_reminder(member, reminder_delay))
 
-                    scheduled_tasks[user_id] = {"kick": kick_task, "reminder": reminder_task}
-                    logger.info(f"Restored curfew schedule for {member.display_name}")
+                scheduled_tasks[user_id] = {"kick": kick_task, "reminder": reminder_task}
+                logger.info(f"Restored curfew schedule for {member.display_name}")
 
         except (ValueError, TypeError) as e:
             logger.error(f"Error restoring curfew for user {user_id}: {e}")

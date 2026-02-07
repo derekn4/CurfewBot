@@ -285,16 +285,16 @@ curl http://localhost:8080/health
 
 After implementation, verify:
 
-- [ ] `python src/curfewbot.py` — bot connects to Discord locally
-- [ ] `docker build -t curfewbot .` — Docker image builds successfully
-- [ ] `docker-compose up` — bot starts in container and connects to Discord
-- [ ] `curl http://localhost:8080/health` — returns 200 OK
-- [ ] `!curfew 11:30PM @user` — sets curfew successfully
-- [ ] `!list_curfews` — shows active curfews
-- [ ] `!remove_curfew @user` — removes curfew
-- [ ] `!reset` — clears all curfews
-- [ ] Bot auto-restarts after `docker-compose restart`
-- [ ] SQLite data persists after container restart
+- [X] `python src/curfewbot.py` — bot connects to Discord locally
+- [X] `docker build -t curfewbot .` — Docker image builds successfully
+- [X] `docker-compose up` — bot starts in container and connects to Discord
+- [X] `curl http://localhost:8080/health` — returns 200 OK
+- [X] `!curfew 11:30PM @user` — sets curfew successfully
+- [X] `!list_curfews` — shows active curfews
+- [X] `!remove_curfew @user` — removes curfew
+- [X] `!reset` — clears all curfews
+- [X] Bot auto-restarts after `docker-compose restart`
+- [X] SQLite data persists after container restart
 
 ---
 
