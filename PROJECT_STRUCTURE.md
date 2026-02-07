@@ -1,115 +1,107 @@
 # CurfewBot Project Structure
 
-This document outlines the organized file structure of the CurfewBot project.
+This document outlines the file structure of the CurfewBot project.
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 CurfewBot/
-├── src/                          # Source code
-│   └── curfewbot.py              # Main bot application
-├── docs/                         # Documentation
-│   ├── DEPLOYMENT_GUIDE.md       # Deployment instructions
-│   └── IMPROVEMENTS_SUMMARY.md   # Summary of improvements made
-├── config/                       # Configuration files
-│   ├── .env.example             # Environment variables template
-│   └── requirements.txt         # Python dependencies
-├── tests/                        # Test files (future use)
-├── .env                         # Environment variables (not in git)
-├── .gitignore                   # Git ignore rules
-├── .gitattributes              # Git attributes
-├── Procfile                    # Deployment configuration
-├── README.md                   # Project overview
-├── PROJECT_STRUCTURE.md        # This file
-├── curfew.png                  # Bot logo/icon
-├── curfewbot_original.py      # Original bot (legacy)
-├── requirements.txt           # Original requirements (legacy)
-└── kicked_users.csv          # Legacy data file
+├── src/                              # Source code
+│   └── curfewbot.py                  # Main bot application
+├── config/                           # Configuration files
+│   ├── .env.example                  # Environment variables template
+│   └── requirements.txt              # Python dependencies
+├── deploy/                           # Deployment files
+│   ├── setup-ec2.sh                  # First-time EC2 setup script
+│   └── curfewbot.service             # systemd service (non-Docker alternative)
+├── docs/                             # Documentation
+│   ├── IMPROVEMENT_AND_DEPLOYMENT_PLAN.md  # Full improvement and deployment plan
+│   ├── DEPLOYMENT_GUIDE.md           # Deployment instructions
+│   ├── IMPROVEMENTS_SUMMARY.md       # Summary of code improvements
+│   └── SETUP_GUIDE.md                # Setup guide
+├── tests/                            # Test files (future use)
+├── .github/
+│   └── workflows/
+│       └── deploy.yml                # CI/CD: auto-deploy on push to main
+├── .env                              # Environment variables (not in git)
+├── .gitignore                        # Git ignore rules
+├── .gitattributes                    # Git attributes
+├── .dockerignore                     # Excludes files from Docker build context
+├── Dockerfile                        # Docker image definition
+├── docker-compose.yml                # Docker Compose for local/EC2 deployment
+├── Procfile                          # Tells hosting platforms how to run the bot
+├── README.md                         # Project overview
+├── PROJECT_STRUCTURE.md              # This file
+└── curfew.png                        # Bot logo/icon
 ```
 
-## 📂 Directory Purposes
+## Directory Purposes
 
 ### `/src/` - Source Code
 Contains the main application code:
-- `curfewbot.py` - The enhanced Discord bot with SQLite database, error handling, and new features
-
-### `/docs/` - Documentation
-Contains all project documentation:
-- `DEPLOYMENT_GUIDE.md` - Step-by-step deployment instructions for various platforms
-- `IMPROVEMENTS_SUMMARY.md` - Detailed summary of Phase 1 improvements
+- `curfewbot.py` - The Discord bot with SQLite database, health check server, graceful shutdown, and curfew enforcement
 
 ### `/config/` - Configuration
 Contains configuration files and templates:
-- `.env.example` - Template showing required environment variables
-- `requirements.txt` - Updated Python dependencies for the improved bot
+- `.env.example` - Template showing all available environment variables
+- `requirements.txt` - Python dependencies
+
+### `/deploy/` - Deployment
+Contains files for deploying to AWS EC2:
+- `setup-ec2.sh` - Bash script for first-time EC2 instance setup (installs Docker, Docker Compose, clones repo)
+- `curfewbot.service` - systemd unit file for running the bot without Docker
+
+### `/docs/` - Documentation
+Contains all project documentation:
+- `IMPROVEMENT_AND_DEPLOYMENT_PLAN.md` - Full plan covering code improvements and AWS deployment
+- `DEPLOYMENT_GUIDE.md` - Step-by-step deployment instructions
+- `IMPROVEMENTS_SUMMARY.md` - Summary of Part 1 code improvements
+- `SETUP_GUIDE.md` - Setup guide
 
 ### `/tests/` - Testing
-Reserved for future test files:
-- Unit tests
-- Integration tests
-- Database tests
+Reserved for future test files.
 
-## 🚀 Quick Start
+### `/.github/workflows/` - CI/CD
+Contains GitHub Actions workflows:
+- `deploy.yml` - Automatically deploys to EC2 via SSH on every push to `main`
 
-1. **Setup Environment**:
-   ```bash
+## Quick Start
+
+1. **Setup environment**:
+   ```sh
    cp config/.env.example .env
    # Edit .env with your Discord bot token and guild ID
    ```
 
-2. **Install Dependencies**:
-   ```bash
+2. **Install dependencies**:
+   ```sh
    pip install -r config/requirements.txt
    ```
 
-3. **Run Locally**:
-   ```bash
+3. **Run locally**:
+   ```sh
    python src/curfewbot.py
    ```
 
-4. **Deploy**:
-   Follow the instructions in `docs/DEPLOYMENT_GUIDE.md`
+4. **Run with Docker**:
+   ```sh
+   docker compose up -d
+   ```
 
-## 📋 File Descriptions
+5. **Deploy to EC2**:
+   Follow the instructions in `docs/IMPROVEMENT_AND_DEPLOYMENT_PLAN.md`
 
-### Core Files
-- **`src/curfewbot.py`** - Main bot application with all improvements
-- **`Procfile`** - Tells hosting platforms how to run the bot
-- **`.env`** - Your private environment variables (never commit this)
+## Core Files
 
-### Configuration
-- **`config/.env.example`** - Template for environment variables
-- **`config/requirements.txt`** - Modern Python dependencies
+- **`src/curfewbot.py`** - Main bot application with all logic in a single file
+- **`Dockerfile`** - Builds the Docker image (python:3.11-slim, non-root user, health check)
+- **`docker-compose.yml`** - Runs the bot with a persistent volume for the SQLite database
+- **`Procfile`** - Tells hosting platforms how to run the bot (`worker: python src/curfewbot.py`)
+- **`.env`** - Your private environment variables (never committed to git)
 
-### Documentation
-- **`docs/DEPLOYMENT_GUIDE.md`** - Complete deployment instructions
-- **`docs/IMPROVEMENTS_SUMMARY.md`** - What was improved in Phase 1
-- **`README.md`** - Original project overview
-- **`PROJECT_STRUCTURE.md`** - This file
+## Notes
 
-### Legacy Files (Keep for Reference)
-- **`curfewbot_original.py`** - Original bot code
-- **`requirements.txt`** - Original dependencies
-- **`kicked_users.csv`** - Old CSV data storage
-
-## 🔧 Development Workflow
-
-1. **Make Changes**: Edit files in `src/`
-2. **Test Locally**: Run `python src/curfewbot.py`
-3. **Update Docs**: Update relevant files in `docs/`
-4. **Deploy**: Push to your hosting platform
-
-## 🌟 Benefits of This Structure
-
-- **Organized**: Clear separation of code, docs, and config
-- **Professional**: Follows standard project layout conventions
-- **Scalable**: Easy to add new features and tests
-- **Maintainable**: Easy to find and update specific components
-- **Deployment-Ready**: Works with all major hosting platforms
-
-## 📝 Notes
-
-- The `tests/` directory is prepared for future testing implementation
-- Legacy files are kept for reference but not used in deployment
-- All new development should use files in the organized structure
-- The Procfile has been updated to use `src/curfewbot.py`
+- The `tests/` directory is prepared for future testing
+- All new development should use the organized structure under `src/`, `config/`, and `deploy/`
+- The Procfile uses `src/curfewbot.py` as the entry point
+- The SQLite database file (`curfew_bot.db`) is created at runtime and excluded from git via `.gitignore`

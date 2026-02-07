@@ -1,0 +1,15 @@
+services:
+  curfewbot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - DB_DIR=/app/data
+      - HEALTH_HOST=0.0.0.0
+    volumes:
+      - bot-data:/app/data
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  bot-data:

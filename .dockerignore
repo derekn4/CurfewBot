@@ -1,0 +1,13 @@
+.git
+.env
+*.db
+__pycache__
+.claude
+docs
+*.md
+curfew.png
+.gitignore
+.gitattributes
+Procfile
+deploy
+.github

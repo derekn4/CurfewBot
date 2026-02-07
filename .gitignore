@@ -1,1 +1,20 @@
 .env
+.claude/
+.clinerules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# Database
+*.db
+
+# IDE
+.vscode/
+.idea/

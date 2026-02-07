@@ -1,23 +1,5 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 
 
 <!-- PROJECT LOGO -->
@@ -33,7 +15,7 @@
     This is exactly what it sounds like. It's a Discord bot that forces a curfew on members in your Discord group.
     The bot removes a user from any (and every) voice channel at a specified time and will not allow them to rejoin until their curfew is up.
     <br />
-    <a href="https://github.com/derekn4/CurfewBot"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/derekn4/CurfewBot"><strong>Explore the docs</strong></a>
     <br />
     <br />
     <a href="https://github.com/derekn4/CurfewBot">View Demo</a>
@@ -64,10 +46,10 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#deployment">Deployment</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -78,6 +60,8 @@
 
 This is exactly what it sounds like. It's a Discord bot that forces a curfew on members in your Discord group.
 The bot removes a user from any (and every) voice channel at a specified time and will not allow them to rejoin until their curfew is up.
+
+All times are in US/Pacific timezone.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -98,7 +82,6 @@ Since it's all in Python, we are going to need pip.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * pip
   ```sh
   pip install --upgrade pip
@@ -106,18 +89,31 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. To get started with the Discord API [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)
+1. To get started with the Discord API: [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)
 2. Clone the repo
    ```sh
    git clone https://github.com/derekn4/CurfewBot.git
+   cd CurfewBot
    ```
 3. Install Python packages
    ```sh
-   pip install -r /path/to/requirements.txt
+   pip install -r config/requirements.txt
    ```
-4. Enter your API in `.env`
-   ```js
-   BOT_TOKEN="YOUR BOT TOKEN HERE"
+4. Copy the example environment file and enter your credentials
+   ```sh
+   cp config/.env.example .env
+   ```
+   Then edit `.env` and fill in your values:
+   ```
+   BOT_TOKEN=your_bot_token_here
+   GUILD_ID=your_guild_id_here
+   ```
+5. Make sure your bot has the required intents enabled in the [Discord Developer Portal](https://discord.com/developers/applications):
+   - `voice_states` -- monitor voice channel joins
+   - `message_content` -- receive prefix command messages
+6. Run the bot
+   ```sh
+   python src/curfewbot.py
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -127,12 +123,53 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-First, make sure that your Bot is enabled for the Discord server of intended use.
-Second, enable access to voice chat and text chats, as well as admin privileges. 
+First, make sure that your bot is enabled for the Discord server of intended use.
+Second, enable access to voice chat and text chats, as well as admin privileges.
 
-Command to set a curfew:
-  - !curfew [time][AM/PM] [username]
+All commands require admin permissions.
 
+| Command | Description | Example |
+|---------|-------------|---------|
+| `!curfew <time> @user` | Set a curfew for a user | `!curfew 11:30PM @user` |
+| `!list_curfews` | Show all active curfews | `!list_curfews` |
+| `!remove_curfew @user` | Remove a specific user's curfew | `!remove_curfew @user` |
+| `!reset` | Clear all curfews | `!reset` |
+
+When a curfew is set, the bot will:
+- Send a reminder 5 minutes before the curfew
+- Kick the user from voice at the curfew time
+- Block them from rejoining any voice channel for 5 minutes
+- Shame them in the general channel if they try to rejoin early
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- DEPLOYMENT -->
+## Deployment
+
+CurfewBot is set up for deployment on AWS EC2 (free tier) using Docker.
+
+### With Docker (recommended)
+
+```sh
+# Build and start
+docker compose up -d
+
+# Check logs
+docker compose logs -f
+
+# Verify the bot is running
+curl http://localhost:8080/health
+```
+
+### Without Docker
+
+A systemd service file is provided at `deploy/curfewbot.service` for running directly on Linux.
+
+### CI/CD
+
+The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically deploys to EC2 on every push to `main`. See `docs/IMPROVEMENT_AND_DEPLOYMENT_PLAN.md` for full setup instructions.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -146,7 +183,11 @@ Command to set a curfew:
 - [X] Kicks user out of voice call
     - [X] Continues to kick user out of voice channels until curfew is up
     - [X] Mentions and shames user in General chat if they try to join before curfew is over
-- [ ] Push CurfewBot to server to run remotely and not local.
+- [X] Health check endpoint for monitoring
+- [X] Graceful shutdown handling
+- [X] Docker containerization
+- [X] CI/CD pipeline for auto-deploy
+- [X] Push CurfewBot to server to run remotely and not local
 
 See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
@@ -172,16 +213,13 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-
-
-
 <!-- CONTACT -->
 ## Contact
 
-Derek Nguyen 
-- [LinkedIn](https://www.linkedin.com/in/derekhuynguyen/) 
-- [Email](derek.nguyen99@gmail.com)
-<br></br>
+Derek Nguyen
+- [LinkedIn](https://www.linkedin.com/in/derekhuynguyen/)
+- [Email](mailto:derek.nguyen99@gmail.com)
+
 Project Link: [https://github.com/derekn4/CurfewBot](https://github.com/derekn4/CurfewBot)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
