@@ -35,6 +35,9 @@ GUILD_ID = int(config('GUILD_ID', default='848474364562243615'))
 HEALTH_PORT = int(config('HEALTH_PORT', default='8080'))
 HEALTH_HOST = config('HEALTH_HOST', default='127.0.0.1')
 
+# Users exempt from curfews (by Discord user ID)
+EXCLUDED_USERS = {427696914880790538}
+
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Guard to prevent duplicate health server starts on reconnect
@@ -258,6 +261,10 @@ async def restore_curfews_from_db():
 async def curfew(ctx, time_str: str, member: discord.Member):
     """Set a curfew for a user."""
     try:
+        if member.id in EXCLUDED_USERS:
+            await ctx.send(f"{member.display_name} is excluded from curfews.")
+            return
+
         # Parse the time string (supports "11:30PM" and "11:30 PM")
         parsed_time = None
         for fmt in ('%I:%M%p', '%I:%M %p'):
@@ -461,16 +468,19 @@ async def on_voice_state_update(member, before, after):
         if not curfew_info:
             return
 
-        allow_time_str = curfew_info['allow_time']
         now = datetime.now(PACIFIC_TZ)
 
         try:
-            # Parse full ISO datetime — handles midnight crossing correctly
-            allow_dt = datetime.fromisoformat(allow_time_str)
+            # Parse full ISO datetimes — handles midnight crossing correctly
+            curfew_dt = datetime.fromisoformat(curfew_info['curfew_time'])
+            allow_dt = datetime.fromisoformat(curfew_info['allow_time'])
+            if curfew_dt.tzinfo is None:
+                curfew_dt = PACIFIC_TZ.localize(curfew_dt)
             if allow_dt.tzinfo is None:
                 allow_dt = PACIFIC_TZ.localize(allow_dt)
 
-            if now < allow_dt:
+            # Only enforce if curfew has started but allow time hasn't passed
+            if now >= curfew_dt and now < allow_dt:
                 await member.move_to(None)
                 await send_shame_message(member)
                 logger.info(f"Kicked {member.display_name} for violating curfew")
