@@ -30,6 +30,9 @@ PACIFIC_TZ = pytz.timezone('US/Pacific')
 # Each value is a dict: {"kick": Task, "reminder": Task | None}
 scheduled_tasks = {}
 
+# Tracks last shame message time per user to prevent spam
+last_shame_time = {}
+
 TOKEN = config('BOT_TOKEN')
 GUILD_ID = int(config('GUILD_ID', default='848474364562243615'))
 HEALTH_PORT = int(config('HEALTH_PORT', default='8080'))
@@ -496,7 +499,12 @@ async def on_voice_state_update(member, before, after):
 
 
 async def send_shame_message(member):
-    """Send shame message when user violates curfew."""
+    """Send shame message when user violates curfew. Rate limited to once per 5 minutes per user."""
+    now = datetime.now(PACIFIC_TZ)
+    last = last_shame_time.get(member.id)
+    if last and (now - last).total_seconds() < 300:
+        return
+
     try:
         general_channel = discord.utils.get(member.guild.channels, name="general")
         if general_channel:
@@ -506,6 +514,7 @@ async def send_shame_message(member):
                 color=discord.Color.red(),
             )
             await general_channel.send(embed=embed)
+            last_shame_time[member.id] = now
 
     except Exception as e:
         logger.error(f"Error sending shame message for {member.display_name}: {e}")
