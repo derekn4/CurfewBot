@@ -145,7 +145,7 @@ Since it's all in Python, we are going to need pip.
 First, make sure that your bot is enabled for the Discord server of intended use.
 Second, enable access to voice chat and text chats, as well as admin privileges.
 
-All commands require admin permissions.
+**Admin commands** (require admin permissions):
 
 | Command | Description | Example |
 |---------|-------------|---------|
@@ -153,6 +153,14 @@ All commands require admin permissions.
 | `!list_curfews` | Show all active curfews | `!list_curfews` |
 | `!remove_curfew @user` | Remove a specific user's curfew | `!remove_curfew @user` |
 | `!reset` | Clear all curfews | `!reset` |
+
+**User commands** (anyone can use):
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `!appeal <reason>` | Appeal your curfew for a time extension | `!appeal I need 15 more minutes` |
+
+The appeal system opens 15 minutes before your curfew. A random roll (~60% grant rate) determines the outcome, and an AI "judge" delivers the ruling. You get 2 appeals per curfew: the first can grant 15 extra minutes, the second 10.
 
 When a curfew is set, the bot will:
 - Send a reminder 5 minutes before the curfew
@@ -208,6 +216,7 @@ The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) 
 - [X] CI/CD pipeline for auto-deploy
 - [X] Push CurfewBot to server to run remotely and not local
 - [X] AI-generated shame messages (Anthropic Claude)
+- [X] Curfew appeal system with AI judge rulings
 
 See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
