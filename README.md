@@ -108,6 +108,25 @@ Since it's all in Python, we are going to need pip.
    BOT_TOKEN=your_bot_token_here
    GUILD_ID=your_guild_id_here
    ```
+
+   **Optional — AI-powered shame messages:**
+   ```
+   ANTHROPIC_API_KEY=your_api_key_here
+   ```
+#### Environment Variables
+
+   | Variable | Required | Default | Description |
+   |----------|----------|---------|-------------|
+   | `BOT_TOKEN` | Yes | - | Discord bot token |
+   | `GUILD_ID` | No | `848474364562243615` | Discord server ID |
+   | `EXCLUDED_USERS` | No | - | Comma-separated user IDs exempt from curfews |
+   | `HEALTH_PORT` | No | `8080` | Health check HTTP port |
+   | `HEALTH_HOST` | No | `127.0.0.1` | Health check bind address |
+   | `DB_DIR` | No | Script directory | Directory for SQLite database file |
+   | `ANTHROPIC_API_KEY` | No | - | Anthropic API key for AI shame messages |
+   | `AI_DAILY_LIMIT` | No | `50` | Max AI API calls per day (cost guard) |
+   | `AI_MODEL` | No | `claude-haiku-4-5-latest` | Claude model for shame messages |
+
 5. Make sure your bot has the required intents enabled in the [Discord Developer Portal](https://discord.com/developers/applications):
    - `voice_states` -- monitor voice channel joins
    - `message_content` -- receive prefix command messages
@@ -139,7 +158,7 @@ When a curfew is set, the bot will:
 - Send a reminder 5 minutes before the curfew
 - Kick the user from voice at the curfew time
 - Block them from rejoining any voice channel for 5 minutes
-- Shame them in the general channel if they try to rejoin early
+- Shame them in the general channel with an AI-generated message if they try to rejoin early (falls back to a static message if no API key is configured)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -188,6 +207,7 @@ The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) 
 - [X] Docker containerization
 - [X] CI/CD pipeline for auto-deploy
 - [X] Push CurfewBot to server to run remotely and not local
+- [X] AI-generated shame messages (Anthropic Claude)
 
 See the [open issues](https://github.com/derekn4/CurfewBot/issues) for a full list of proposed features (and known issues).
 
