@@ -10,6 +10,8 @@ import traceback
 import logging
 from decouple import config
 import os
+import re
+from typing import Optional
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -37,9 +39,28 @@ TOKEN = config('BOT_TOKEN')
 GUILD_ID = int(config('GUILD_ID', default='848474364562243615'))
 HEALTH_PORT = int(config('HEALTH_PORT', default='8080'))
 HEALTH_HOST = config('HEALTH_HOST', default='127.0.0.1')
+ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
+AI_DAILY_LIMIT = int(config('AI_DAILY_LIMIT', default='50'))
+AI_MODEL = config('AI_MODEL', default='claude-haiku-4-5-latest')
 
-# Users exempt from curfews (by Discord user ID)
-EXCLUDED_USERS = {427696914880790538}
+# AI shame message client (optional — falls back to static messages if not configured)
+ai_client = None
+if ANTHROPIC_API_KEY:
+    try:
+        from anthropic import AsyncAnthropic
+        ai_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+        logger.info("Anthropic AI client initialized for shame messages")
+    except ImportError:
+        logger.warning(
+            "ANTHROPIC_API_KEY is set but 'anthropic' package is not installed. "
+            "Falling back to static shame messages."
+        )
+
+ai_call_count = 0
+ai_call_date = None
+
+# Users exempt from curfews (by Discord user ID, comma-separated in .env)
+EXCLUDED_USERS = {int(uid) for uid in config('EXCLUDED_USERS', default='').split(',') if uid.strip()}
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -485,7 +506,7 @@ async def on_voice_state_update(member, before, after):
             # Only enforce if curfew has started but allow time hasn't passed
             if now >= curfew_dt and now < allow_dt:
                 await member.move_to(None)
-                await send_shame_message(member)
+                await send_shame_message(member, curfew_dt.strftime('%I:%M %p'))
                 logger.info(f"Kicked {member.display_name} for violating curfew")
             else:
                 remove_user_curfew(member.id)
@@ -498,7 +519,81 @@ async def on_voice_state_update(member, before, after):
         logger.error(f"Error in voice state update for {member.display_name}: {e}")
 
 
-async def send_shame_message(member):
+def sanitize_for_prompt(name: str) -> str:
+    """Sanitize a display name before inserting into an AI prompt."""
+    name = name[:32]
+    name = re.sub(r'@(everyone|here)', '', name)
+    name = re.sub(r'<@!?\d+>', '', name)
+    name = re.sub(r'[\x00-\x1f\x7f]', '', name)
+    name = name.strip()
+    return name if name else "Unknown User"
+
+
+def sanitize_ai_output(text: str) -> str:
+    """Strip Discord mentions and enforce length limit on AI-generated text."""
+    text = re.sub(r'@(everyone|here)', '', text)
+    text = re.sub(r'<@!?\d+>', '', text)
+    return text[:250].strip()
+
+
+SHAME_SYSTEM_PROMPT = (
+    "You are a dramatic, over-the-top announcer for a Discord server's curfew system. "
+    "A user just tried to join a voice channel past their curfew. Generate a short "
+    "(1-2 sentences, under 200 characters), humorous, family-friendly shame message. "
+    "Be creative and vary your style - sarcastic, dramatic, news-anchor-style, "
+    "medieval court, etc. Do NOT use @mentions or usernames - just the message text. "
+    "Do NOT use emojis. Output ONLY the shame message, nothing else."
+)
+
+
+async def generate_shame_message(display_name: str, curfew_time: Optional[str] = None) -> Optional[str]:
+    """Generate a unique shame message using Claude AI. Returns None on any failure."""
+    global ai_call_count, ai_call_date
+
+    if not ai_client:
+        return None
+
+    today = datetime.now(PACIFIC_TZ).date()
+    if ai_call_date != today:
+        ai_call_count = 0
+        ai_call_date = today
+
+    if ai_call_count >= AI_DAILY_LIMIT:
+        logger.info("AI daily limit reached, falling back to static message")
+        return None
+
+    ai_call_count += 1
+
+    try:
+        safe_name = sanitize_for_prompt(display_name)
+        time_context = f" Their curfew was at {curfew_time}." if curfew_time else ""
+        response = await asyncio.wait_for(
+            ai_client.messages.create(
+                model=AI_MODEL,
+                max_tokens=150,
+                system=SHAME_SYSTEM_PROMPT,
+                messages=[{
+                    "role": "user",
+                    "content": f"The user's name is {safe_name}.{time_context}",
+                }],
+            ),
+            timeout=3.0,
+        )
+        if not response.content:
+            logger.warning("AI returned empty content list")
+            return None
+        text = sanitize_ai_output(response.content[0].text)
+        return text if text else None
+
+    except asyncio.TimeoutError:
+        logger.warning("AI shame message timed out, falling back to static")
+        return None
+    except Exception as e:
+        logger.error(f"Error generating AI shame message: {e}")
+        return None
+
+
+async def send_shame_message(member, curfew_time: Optional[str] = None):
     """Send shame message when user violates curfew. Rate limited to once per 5 minutes per user."""
     now = datetime.now(PACIFIC_TZ)
     last = last_shame_time.get(member.id)
@@ -506,11 +601,17 @@ async def send_shame_message(member):
         return
 
     try:
+        ai_text = await generate_shame_message(member.display_name, curfew_time)
+        if ai_text:
+            description = f"{member.mention} {ai_text}"
+        else:
+            description = f"{member.mention} tried to join voice chat during their curfew!"
+
         general_channel = discord.utils.get(member.guild.channels, name="general")
         if general_channel:
             embed = discord.Embed(
                 title="SHAME",
-                description=f"{member.mention} tried to join voice chat during their curfew!",
+                description=description,
                 color=discord.Color.red(),
             )
             await general_channel.send(embed=embed)
